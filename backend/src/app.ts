@@ -25,10 +25,10 @@ dotenv.config();
 
 const app: Express = express();
 
-// CORS Middleware - strictly configured from environment
 const frontendUrl = process.env.FRONTEND_URL;
 app.use(cors({
   origin: frontendUrl,
+  credentials:true
 }));
 
 app.use(express.json());
