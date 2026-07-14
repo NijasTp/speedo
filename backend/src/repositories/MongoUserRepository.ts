@@ -1,5 +1,5 @@
-import { IUserRepository } from './IUserRepository';
-import { User, UserModel } from '../models/UserModel';
+import { IUserRepository } from '../interfaces/IUserRepository.js';
+import { User, UserModel } from '../models/UserModel.js';
 
 export class MongoUserRepository implements IUserRepository {
   public async findByEmail(email: string): Promise<User | null> {

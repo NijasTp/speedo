@@ -1,18 +1,6 @@
 import React, { useState } from 'react';
-import api from '../services/api';
-
-interface TripSummary {
-  totalDistance: number;
-  totalDuration: number;
-  stoppageDuration: number;
-  idlingDuration: number;
-}
-
-interface Trip {
-  id: string;
-  name: string;
-  summary: TripSummary;
-}
+import { tripService } from '../services/tripService';
+import type { Trip } from '../types';
 
 interface StatsPanelProps {
   trip: Trip;
@@ -38,10 +26,9 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({ trip, onDeleteSuccess })
     }
     setDeleting(true);
     try {
-      await api.delete(`/trips/${trip.id}`);
+      await tripService.deleteTrip(trip.id);
       onDeleteSuccess(trip.id);
-    } catch (err) {
-      console.error('Failed to delete trip:', err);
+    } catch {
       alert('Failed to delete trip.');
     } finally {
       setDeleting(false);

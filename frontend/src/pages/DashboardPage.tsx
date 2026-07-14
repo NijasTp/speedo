@@ -1,49 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { tripService } from '../services/tripService';
 import { MapView } from '../components/MapView';
 import { StatsPanel } from '../components/StatsPanel';
 import { UploadModal } from '../components/UploadModal';
-
-interface GPSPoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  ignition: 'on' | 'off';
-  speed: number;
-  isOverspeed: boolean;
-}
-
-interface StoppagePoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  duration: number;
-}
-
-interface IdlingPoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  duration: number;
-}
-
-interface TripSummary {
-  totalDistance: number;
-  totalDuration: number;
-  stoppageDuration: number;
-  idlingDuration: number;
-}
-
-interface Trip {
-  id: string;
-  name: string;
-  uploadDate: string;
-  summary: TripSummary;
-  points: GPSPoint[];
-  stoppagePoints: StoppagePoint[];
-  idlingPoints: IdlingPoint[];
-}
+import type { Trip } from '../types';
 
 export const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -53,20 +14,18 @@ export const DashboardPage: React.FC = () => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all trips on load
   const fetchTrips = async () => {
     try {
-      const response = await api.get('/trips');
-      setTrips(response.data);
+      const data = await tripService.getTrips();
+      setTrips(data);
       
-      // Auto-select the first trip if available
-      if (response.data.length > 0 && selectedTripIds.length === 0) {
-        const firstTrip = response.data[0];
+      if (data.length > 0 && selectedTripIds.length === 0) {
+        const firstTrip = data[0];
         setSelectedTripIds([firstTrip.id]);
         setActiveTripId(firstTrip.id);
       }
-    } catch (err) {
-      console.error('Failed to load trips:', err);
+    } catch {
+      // Suppress logs and show elegant states
     } finally {
       setLoading(false);
     }
@@ -74,11 +33,11 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     fetchTrips();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUploadSuccess = (newTrip: Trip) => {
     setTrips(prev => [newTrip, ...prev]);
-    // Automatically select the newly uploaded trip
     setSelectedTripIds(prev => [...prev, newTrip.id]);
     setActiveTripId(newTrip.id);
   };
@@ -93,7 +52,7 @@ export const DashboardPage: React.FC = () => {
   };
 
   const handleTripCheckboxToggle = (tripId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Avoid triggering trip row click
+    event.stopPropagation();
     setSelectedTripIds(prev => {
       const isSelected = prev.includes(tripId);
       let updated: string[];
@@ -103,14 +62,11 @@ export const DashboardPage: React.FC = () => {
         updated = [...prev, tripId];
       }
 
-      // Sync active trip selection
       if (updated.length === 0) {
         setActiveTripId(null);
       } else if (activeTripId === tripId && isSelected) {
-        // If we unchecked the currently active trip, set active to another selected trip
         setActiveTripId(updated[0]);
       } else if (!isSelected) {
-        // If we checked a new trip, make it active
         setActiveTripId(tripId);
       }
 
@@ -119,17 +75,13 @@ export const DashboardPage: React.FC = () => {
   };
 
   const handleTripRowClick = (tripId: string) => {
-    // If not checked, check it
     if (!selectedTripIds.includes(tripId)) {
       setSelectedTripIds(prev => [...prev, tripId]);
     }
-    // Set as active tab
     setActiveTripId(tripId);
   };
 
-  // Get active trip details
   const activeTrip = trips.find(t => t.id === activeTripId);
-  // Get selected trips data
   const selectedTrips = trips.filter(t => selectedTripIds.includes(t.id));
 
   return (
@@ -176,7 +128,7 @@ export const DashboardPage: React.FC = () => {
                     type="checkbox" 
                     className="trip-checkbox"
                     checked={isSelected}
-                    onChange={() => {}} // Click handled in outer row toggle helper
+                    onChange={() => {}}
                     onClick={(e) => handleTripCheckboxToggle(trip.id, e)}
                   />
                   <div className="trip-item-info">
@@ -201,7 +153,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Workspace (Map + Tab view + Stats) */}
+      {/* Main Workspace */}
       <div className="main-workspace">
         {selectedTrips.length === 0 ? (
           <div className="dashboard-empty">
@@ -211,13 +163,11 @@ export const DashboardPage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Leaflet Map display */}
             <MapView 
               selectedTrips={selectedTrips} 
               activeTripId={activeTripId} 
             />
 
-            {/* Tab switch overlay if multiple trips are selected */}
             {selectedTrips.length > 1 && (
               <div className="tabs-container">
                 <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 'bold', marginRight: '8px' }}>
@@ -235,7 +185,6 @@ export const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {/* Metrics Report of the active selected trip */}
             {activeTrip && (
               <StatsPanel 
                 trip={activeTrip} 
@@ -246,7 +195,6 @@ export const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Upload CSV modal trigger */}
       {isUploadOpen && (
         <UploadModal 
           onClose={() => setIsUploadOpen(false)} 

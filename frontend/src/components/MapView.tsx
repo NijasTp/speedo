@@ -2,51 +2,19 @@ import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-interface GPSPoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  ignition: 'on' | 'off';
-  speed: number;
-  isOverspeed: boolean;
-}
-
-interface StoppagePoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  duration: number;
-}
-
-interface IdlingPoint {
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-  duration: number;
-}
-
-interface Trip {
-  id: string;
-  name: string;
-  points: GPSPoint[];
-  stoppagePoints: StoppagePoint[];
-  idlingPoints: IdlingPoint[];
-}
+import type { Trip } from '../types';
 
 interface MapViewProps {
   selectedTrips: Trip[];
   activeTripId: string | null;
 }
 
-// Inner component to focus map on active or selected trips bounds
 const MapBoundsUpdater: React.FC<{ trips: Trip[]; activeTripId: string | null }> = ({ trips, activeTripId }) => {
   const map = useMap();
 
   useEffect(() => {
     if (trips.length === 0) return;
 
-    // Focus on active trip first if available, else fit all selected
     const focusTrips = activeTripId 
       ? trips.filter(t => t.id === activeTripId)
       : trips;
@@ -95,10 +63,8 @@ export const MapView: React.FC<MapViewProps> = ({ selectedTrips, activeTripId })
       if (overspeed === currentOverspeed) {
         currentSegment.push([curr.latitude, curr.longitude]);
       } else {
-        // Push current segment
         currentSegment.push([curr.latitude, curr.longitude]);
         segments.push({ coords: currentSegment, isOverspeed: currentOverspeed });
-        // Start next segment starting from previous point to ensure path continuity
         currentSegment = [[prev.latitude, prev.longitude], [curr.latitude, curr.longitude]];
         currentOverspeed = overspeed;
       }
@@ -129,7 +95,6 @@ export const MapView: React.FC<MapViewProps> = ({ selectedTrips, activeTripId })
     });
   };
 
-  // Center on Europe by default
   const defaultCenter: [number, number] = [52.52, 13.40];
   const defaultZoom = 12;
 
@@ -152,7 +117,6 @@ export const MapView: React.FC<MapViewProps> = ({ selectedTrips, activeTripId })
           
           return (
             <React.Fragment key={trip.id}>
-              {/* Path segments */}
               {segments.map((seg, idx) => (
                 <Polyline
                   key={`${trip.id}-seg-${idx}`}
@@ -171,7 +135,6 @@ export const MapView: React.FC<MapViewProps> = ({ selectedTrips, activeTripId })
                 </Polyline>
               ))}
 
-              {/* Stoppages */}
               {trip.stoppagePoints.map((stop, idx) => (
                 <Marker
                   key={`${trip.id}-stop-${idx}`}
@@ -189,7 +152,6 @@ export const MapView: React.FC<MapViewProps> = ({ selectedTrips, activeTripId })
                 </Marker>
               ))}
 
-              {/* Idling points */}
               {trip.idlingPoints.map((idle, idx) => (
                 <Marker
                   key={`${trip.id}-idle-${idx}`}

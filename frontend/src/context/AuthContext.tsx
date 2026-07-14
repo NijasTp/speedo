@@ -1,11 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { authService } from '../services/authService';
+import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -29,10 +24,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        const response = await api.get('/auth/me');
-        setUser(response.data.user);
-      } catch (error) {
-        console.error('Session validation failed', error);
+        const data = await authService.getMe();
+        setUser(data.user);
+      } catch {
         localStorage.removeItem('speedo_token');
         setUser(null);
       } finally {
@@ -43,17 +37,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { token, user: loggedUser } = response.data;
-    localStorage.setItem('speedo_token', token);
-    setUser(loggedUser);
+    const data = await authService.login(email, password);
+    localStorage.setItem('speedo_token', data.token);
+    setUser(data.user);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await api.post('/auth/register', { name, email, password });
-    const { token, user: registeredUser } = response.data;
-    localStorage.setItem('speedo_token', token);
-    setUser(registeredUser);
+    const data = await authService.register(name, email, password);
+    localStorage.setItem('speedo_token', data.token);
+    setUser(data.user);
   };
 
   const logout = () => {

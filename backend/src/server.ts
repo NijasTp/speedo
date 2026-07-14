@@ -1,19 +1,18 @@
-import app from './app';
-import { connectDatabase } from './config/database';
+import app from './app.js';
+import { connectDatabase } from './config/database.js';
+import { logger } from './logger/logger.js';
 
 const PORT = process.env.PORT || 5000;
 
 async function bootstrap() {
-  // Connect to MongoDB Database
   await connectDatabase();
 
-  // Start HTTP Server
   app.listen(PORT, () => {
-    console.log(`Speedo API Server is running on http://localhost:${PORT}`);
+    logger.info(`Speedo API Server is running on port ${PORT}`);
   });
 }
 
-bootstrap().catch((error) => {
-  console.error('Error starting Speedo Server:', error);
+bootstrap().catch((error: Error) => {
+  logger.error('Error starting Speedo Server: %o', error);
   process.exit(1);
 });

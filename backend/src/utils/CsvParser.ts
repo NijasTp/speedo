@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import csv from 'csv-parser';
-import { RawGPSPoint } from '../services/ICalculationService';
+import { RawGPSPoint } from '../interfaces/ICalculationService.js';
 
 export function parseCsvBuffer(buffer: Buffer): Promise<RawGPSPoint[]> {
   return new Promise((resolve, reject) => {
@@ -9,11 +9,10 @@ export function parseCsvBuffer(buffer: Buffer): Promise<RawGPSPoint[]> {
 
     stream
       .pipe(csv())
-      .on('data', (data) => {
-        // Standardize keys (trim keys and values)
-        const row: any = {};
+      .on('data', (data: Record<string, string>) => {
+        const row: Record<string, string> = {};
         for (const key of Object.keys(data)) {
-          row[key.trim().toLowerCase()] = data[key] ? data[key].trim() : '';
+          row[key.trim().toLowerCase()] = data[key] ? String(data[key]).trim() : '';
         }
 
         const lat = parseFloat(row.latitude);
@@ -33,7 +32,7 @@ export function parseCsvBuffer(buffer: Buffer): Promise<RawGPSPoint[]> {
       .on('end', () => {
         resolve(results);
       })
-      .on('error', (error) => {
+      .on('error', (error: Error) => {
         reject(error);
       });
   });

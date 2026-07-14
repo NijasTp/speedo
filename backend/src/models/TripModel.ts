@@ -5,32 +5,33 @@ export interface GPSPoint {
   longitude: number;
   timestamp: Date;
   ignition: 'on' | 'off';
-  speed?: number; // in km/h
+  speed?: number;
   isOverspeed?: boolean;
 }
 
 export interface TripSummary {
-  totalDistance: number; // in km
-  totalDuration: number; // in seconds
-  stoppageDuration: number; // in seconds
-  idlingDuration: number; // in seconds
+  totalDistance: number;
+  totalDuration: number;
+  stoppageDuration: number;
+  idlingDuration: number;
 }
 
 export interface StoppagePoint {
   latitude: number;
   longitude: number;
   timestamp: Date;
-  duration: number; // in seconds
+  duration: number;
 }
 
 export interface IdlingPoint {
   latitude: number;
   longitude: number;
   timestamp: Date;
-  duration: number; // in seconds
+  duration: number;
 }
 
 export interface Trip {
+  _id?: mongoose.Types.ObjectId | string;
   id?: string;
   userId: string;
   name: string;
@@ -77,15 +78,6 @@ const TripSchema = new Schema<Trip>({
   points: [GPSPointSchema],
   stoppagePoints: [StoppagePointSchema],
   idlingPoints: [IdlingPointSchema]
-});
-
-TripSchema.set('toJSON', {
-  transform: (doc, ret: any) => {
-    ret.id = ret._id.toString();
-    delete ret._id;
-    delete ret.__v;
-    return ret;
-  }
 });
 
 export const TripModel = mongoose.model<Trip>('Trip', TripSchema);

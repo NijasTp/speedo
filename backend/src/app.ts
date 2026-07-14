@@ -1,30 +1,36 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
 // Import repositories
-import { MongoUserRepository } from './repositories/MongoUserRepository';
-import { MongoTripRepository } from './repositories/MongoTripRepository';
+import { MongoUserRepository } from './repositories/MongoUserRepository.js';
+import { MongoTripRepository } from './repositories/MongoTripRepository.js';
 
 // Import services
-import { AuthService } from './services/AuthService';
-import { SpeedCalculationService } from './services/SpeedCalculationService';
-import { TripService } from './services/TripService';
+import { AuthService } from './services/AuthService.js';
+import { SpeedCalculationService } from './services/SpeedCalculationService.js';
+import { TripService } from './services/TripService.js';
 
 // Import controllers, middlewares, routes
-import { AuthController } from './controllers/AuthController';
-import { TripController } from './controllers/TripController';
-import { createAuthMiddleware } from './middlewares/authMiddleware';
-import { createAuthRouter } from './routes/authRoutes';
-import { createTripRouter } from './routes/tripRoutes';
+import { AuthController } from './controllers/AuthController.js';
+import { TripController } from './controllers/TripController.js';
+import { createAuthMiddleware } from './middlewares/authMiddleware.js';
+import { errorMiddleware } from './middlewares/errorMiddleware.js';
+import { createAuthRouter } from './routes/authRoutes.js';
+import { createTripRouter } from './routes/tripRoutes.js';
+import { ApiRoutes } from './enums/api-routes.enum.js';
 
 // Load environment variables
 dotenv.config();
 
 const app: Express = express();
 
-// Standard middleware
-app.use(cors());
+// CORS Middleware - strictly configured from environment
+const frontendUrl = process.env.FRONTEND_URL;
+app.use(cors({
+  origin: frontendUrl,
+}));
+
 app.use(express.json());
 
 // Composition Root (Dependency Injection setup)
@@ -40,22 +46,14 @@ const authMiddleware = createAuthMiddleware(authService);
 const authController = new AuthController(authService);
 const tripController = new TripController(tripService);
 
-// Setup routers
+// Setup routers using API route enums
 const authRouter = createAuthRouter(authController, authMiddleware);
 const tripRouter = createTripRouter(tripController, authMiddleware);
 
-app.use('/api/auth', authRouter);
-app.use('/api/trips', tripRouter);
+app.use(ApiRoutes.AUTH, authRouter);
+app.use(ApiRoutes.TRIPS, tripRouter);
 
-// Basic health check route
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date() });
-});
-
-// Global error handler middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('Unhandled Server Error:', err.stack);
-  res.status(500).json({ error: err.message || 'Internal Server Error' });
-});
+// Centralized error handler middleware
+app.use(errorMiddleware);
 
 export default app;

@@ -1,79 +1,62 @@
 import { Response } from 'express';
-import { ITripService } from '../services/ITripService';
-import { AuthenticatedRequest } from '../middlewares/authMiddleware';
-import { parseCsvBuffer } from '../utils/CsvParser';
+import { ITripService } from '../interfaces/ITripService.js';
+import { AuthenticatedRequest } from '../middlewares/authMiddleware.js';
+import { parseCsvBuffer } from '../utils/CsvParser.js';
+import { HttpStatus } from '../enums/http-status.enum.js';
+import { TripMessages } from '../constants/messages.js';
+import { UnauthorizedError, BadRequestError } from '../errors/AppError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 export class TripController {
   constructor(private readonly tripService: ITripService) {}
 
-  public uploadTrip = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'Unauthorized.' });
-      }
-
-      if (!req.file) {
-        return res.status(400).json({ error: 'CSV file is required.' });
-      }
-
-      // Default name to filename if name not provided in body
-      let tripName = req.body.name || req.file.originalname;
-      if (tripName.endsWith('.csv')) {
-        tripName = tripName.substring(0, tripName.length - 4);
-      }
-
-      const rawPoints = await parseCsvBuffer(req.file.buffer);
-      if (rawPoints.length === 0) {
-        return res.status(400).json({ error: 'No valid GPS points found in CSV.' });
-      }
-
-      const trip = await this.tripService.createTrip(req.user.id, tripName, rawPoints);
-      return res.status(201).json(trip);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message || 'File processing failed.' });
+  public uploadTrip = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError(TripMessages.TRIP_NOT_FOUND_OR_UNAUTHORIZED);
     }
-  };
 
-  public getTrips = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'Unauthorized.' });
-      }
-
-      const trips = await this.tripService.getTripsByUser(req.user.id);
-      return res.status(200).json(trips);
-    } catch (error: any) {
-      return res.status(500).json({ error: 'Failed to fetch trips.' });
+    if (!req.file) {
+      throw new BadRequestError(TripMessages.CSV_REQUIRED);
     }
-  };
 
-  public getTrip = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'Unauthorized.' });
-      }
-
-      const trip = await this.tripService.getTripById(req.user.id, req.params.id);
-      if (!trip) {
-        return res.status(404).json({ error: 'Trip not found.' });
-      }
-
-      return res.status(200).json(trip);
-    } catch (error: any) {
-      return res.status(500).json({ error: 'Failed to fetch trip details.' });
+    let tripName = req.body.name || req.file.originalname;
+    if (tripName.endsWith('.csv')) {
+      tripName = tripName.substring(0, tripName.length - 4);
     }
-  };
 
-  public deleteTrip = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'Unauthorized.' });
-      }
-
-      await this.tripService.deleteTrip(req.user.id, req.params.id);
-      return res.status(200).json({ message: 'Trip deleted successfully.' });
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message || 'Failed to delete trip.' });
+    const rawPoints = await parseCsvBuffer(req.file.buffer);
+    if (rawPoints.length === 0) {
+      throw new BadRequestError(TripMessages.NO_VALID_POINTS);
     }
-  };
+
+    const trip = await this.tripService.createTrip(req.user.id, tripName, rawPoints);
+    return res.status(HttpStatus.CREATED).json(trip);
+  });
+
+  public getTrips = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError(TripMessages.TRIP_NOT_FOUND_OR_UNAUTHORIZED);
+    }
+
+    const trips = await this.tripService.getTripsByUser(req.user.id);
+    return res.status(HttpStatus.OK).json(trips);
+  });
+
+  public getTrip = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError(TripMessages.TRIP_NOT_FOUND_OR_UNAUTHORIZED);
+    }
+
+    const trip = await this.tripService.getTripById(req.user.id, req.params.id);
+    return res.status(HttpStatus.OK).json(trip);
+  });
+
+  public deleteTrip = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user || !req.user.id) {
+      throw new UnauthorizedError(TripMessages.TRIP_NOT_FOUND_OR_UNAUTHORIZED);
+    }
+
+    await this.tripService.deleteTrip(req.user.id, req.params.id);
+    return res.status(HttpStatus.OK).json({ message: TripMessages.TRIP_DELETED });
+  });
 }

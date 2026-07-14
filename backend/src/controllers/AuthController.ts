@@ -1,46 +1,41 @@
 import { Request, Response } from 'express';
-import { IAuthService } from '../services/IAuthService';
-import { AuthenticatedRequest } from '../middlewares/authMiddleware';
+import { IAuthService } from '../interfaces/IAuthService.js';
+import { AuthenticatedRequest } from '../middlewares/authMiddleware.js';
+import { HttpStatus } from '../enums/http-status.enum.js';
+import { AuthMessages } from '../constants/messages.js';
+import { ValidationError, UnauthorizedError } from '../errors/AppError.js';
+import { RegisterRequestDto, LoginRequestDto } from '../dtos/auth.dto.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 export class AuthController {
   constructor(private readonly authService: IAuthService) {}
 
-  public register = async (req: Request, res: Response) => {
-    try {
-      const { name, email, password } = req.body;
-      if (!name || !email || !password) {
-        return res.status(400).json({ error: 'Name, email, and password are required.' });
-      }
-
-      const result = await this.authService.register(name, email, password);
-      return res.status(201).json(result);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message || 'Registration failed.' });
+  public register = asyncHandler(async (req: Request, res: Response) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      throw new ValidationError(AuthMessages.NAME_EMAIL_PASSWORD_REQUIRED);
     }
-  };
 
-  public login = async (req: Request, res: Response) => {
-    try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required.' });
-      }
+    const dto: RegisterRequestDto = { name, email, password };
+    const result = await this.authService.register(dto);
+    return res.status(HttpStatus.CREATED).json(result);
+  });
 
-      const result = await this.authService.login(email, password);
-      return res.status(200).json(result);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message || 'Login failed.' });
+  public login = asyncHandler(async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new ValidationError(AuthMessages.EMAIL_PASSWORD_REQUIRED);
     }
-  };
 
-  public getMe = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ error: 'Not authenticated.' });
-      }
-      return res.status(200).json({ user: req.user });
-    } catch (error: any) {
-      return res.status(500).json({ error: 'Internal server error.' });
+    const dto: LoginRequestDto = { email, password };
+    const result = await this.authService.login(dto);
+    return res.status(HttpStatus.OK).json(result);
+  });
+
+  public getMe = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError(AuthMessages.NOT_AUTHENTICATED);
     }
-  };
+    return res.status(HttpStatus.OK).json({ user: req.user });
+  });
 }

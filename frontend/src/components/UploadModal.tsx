@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
-import api from '../services/api';
+import { tripService } from '../services/tripService';
+import type { Trip } from '../types';
+import axios from 'axios';
 
 interface UploadModalProps {
   onClose: () => void;
-  onUploadSuccess: (newTrip: any) => void;
+  onUploadSuccess: (newTrip: Trip) => void;
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({ onClose, onUploadSuccess }) => {
@@ -64,15 +66,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose, onUploadSucce
     formData.append('name', tripName);
 
     try {
-      const response = await api.post('/trips/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      onUploadSuccess(response.data);
+      const newTrip = await tripService.uploadTrip(formData);
+      onUploadSuccess(newTrip);
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to upload and calculate trip details.');
+    } catch (err) {
+      let errorMessage = 'Failed to upload and calculate trip details.';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
