@@ -1,4 +1,4 @@
-import app from './app.js';
+import app from './app';
 import { connectDatabase } from './config/database.js';
 import { logger } from './logger/logger.js';
 
