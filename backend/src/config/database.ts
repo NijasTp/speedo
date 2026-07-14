@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { logger } from '../logger/logger.js';
+import { logger } from '../logger/logger';
 
 export async function connectDatabase(): Promise<void> {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/speedo';

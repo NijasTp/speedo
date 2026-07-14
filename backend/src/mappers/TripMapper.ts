@@ -1,5 +1,5 @@
-import { Trip } from '../models/TripModel.js';
-import { TripResponseDto } from '../dtos/trip.dto.js';
+import { Trip } from '../models/TripModel';
+import { TripResponseDto } from '../dtos/trip.dto';
 
 export class TripMapper {
   public static toDto(trip: Trip): TripResponseDto {

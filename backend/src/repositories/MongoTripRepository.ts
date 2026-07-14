@@ -1,5 +1,5 @@
-import { ITripRepository } from '../interfaces/ITripRepository.js';
-import { Trip, TripModel } from '../models/TripModel.js';
+import { ITripRepository } from '../interfaces/ITripRepository';
+import { Trip, TripModel } from '../models/TripModel';
 
 export class MongoTripRepository implements ITripRepository {
   public async create(trip: Trip): Promise<Trip> {

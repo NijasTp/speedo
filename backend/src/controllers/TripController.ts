@@ -1,11 +1,11 @@
 import { Response } from 'express';
-import { ITripService } from '../interfaces/ITripService.js';
-import { AuthenticatedRequest } from '../middlewares/authMiddleware.js';
-import { parseCsvBuffer } from '../utils/CsvParser.js';
-import { HttpStatus } from '../enums/http-status.enum.js';
-import { TripMessages } from '../constants/messages.js';
-import { UnauthorizedError, BadRequestError } from '../errors/AppError.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
+import { ITripService } from '../interfaces/ITripService';
+import { AuthenticatedRequest } from '../middlewares/authMiddleware';
+import { parseCsvBuffer } from '../utils/CsvParser';
+import { HttpStatus } from '../enums/http-status.enum';
+import { TripMessages } from '../constants/messages';
+import { UnauthorizedError, BadRequestError } from '../errors/AppError';
+import { asyncHandler } from '../utils/asyncHandler';
 
 export class TripController {
   constructor(private readonly tripService: ITripService) {}

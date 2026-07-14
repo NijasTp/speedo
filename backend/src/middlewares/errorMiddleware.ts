@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/AppError.js';
-import { HttpStatus } from '../enums/http-status.enum.js';
-import { GeneralMessages } from '../constants/messages.js';
-import { logger } from '../logger/logger.js';
+import { AppError } from '../errors/AppError';
+import { HttpStatus } from '../enums/http-status.enum';
+import { GeneralMessages } from '../constants/messages';
+import { logger } from '../logger/logger';
 
 export function errorMiddleware(
   err: Error,

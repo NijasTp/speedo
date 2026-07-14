@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import csv from 'csv-parser';
-import { RawGPSPoint } from '../interfaces/ICalculationService.js';
+import { RawGPSPoint } from '../interfaces/ICalculationService';
 
 export function parseCsvBuffer(buffer: Buffer): Promise<RawGPSPoint[]> {
   return new Promise((resolve, reject) => {

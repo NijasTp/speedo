@@ -1,5 +1,5 @@
 import multer from 'multer';
-import { TripMessages } from '../constants/messages.js';
+import { TripMessages } from '../constants/messages';
 
 const storage = multer.memoryStorage();
 

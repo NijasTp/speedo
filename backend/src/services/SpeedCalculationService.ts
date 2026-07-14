@@ -1,5 +1,5 @@
-import { ICalculationService, RawGPSPoint, CalculationResult } from '../interfaces/ICalculationService.js';
-import { GPSPointDto, StoppagePointDto, IdlingPointDto } from '../dtos/trip.dto.js';
+import { ICalculationService, RawGPSPoint, CalculationResult } from '../interfaces/ICalculationService';
+import { GPSPointDto, StoppagePointDto, IdlingPointDto } from '../dtos/trip.dto';
 import * as geolib from 'geolib';
 
 export class SpeedCalculationService implements ICalculationService {

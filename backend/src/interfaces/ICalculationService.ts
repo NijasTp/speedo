@@ -1,4 +1,4 @@
-import { GPSPointDto, TripSummaryDto, StoppagePointDto, IdlingPointDto } from '../dtos/trip.dto.js';
+import { GPSPointDto, TripSummaryDto, StoppagePointDto, IdlingPointDto } from '../dtos/trip.dto';
 
 export interface RawGPSPoint {
   latitude: number;

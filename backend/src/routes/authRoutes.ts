@@ -1,7 +1,6 @@
-import { Router } from 'express';
-import { AuthController } from '../controllers/AuthController.js';
-import { RequestHandler } from 'express';
-import { ApiRoutes } from '../enums/api-routes.enum.js';
+import { Router, RequestHandler } from 'express';
+import { AuthController } from '../controllers/AuthController';
+import { ApiRoutes } from '../enums/api-routes.enum';
 
 export function createAuthRouter(authController: AuthController, authMiddleware: RequestHandler): Router {
   const router = Router();

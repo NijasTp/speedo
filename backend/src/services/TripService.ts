@@ -1,11 +1,11 @@
-import { ITripService } from '../interfaces/ITripService.js';
-import { ITripRepository } from '../interfaces/ITripRepository.js';
-import { ICalculationService, RawGPSPoint } from '../interfaces/ICalculationService.js';
-import { TripResponseDto } from '../dtos/trip.dto.js';
-import { TripMapper } from '../mappers/TripMapper.js';
-import { Trip } from '../models/TripModel.js';
-import { NotFoundError, InternalServerError, BadRequestError } from '../errors/AppError.js';
-import { TripMessages } from '../constants/messages.js';
+import { ITripService } from '../interfaces/ITripService';
+import { ITripRepository } from '../interfaces/ITripRepository';
+import { ICalculationService, RawGPSPoint } from '../interfaces/ICalculationService';
+import { TripResponseDto } from '../dtos/trip.dto';
+import { TripMapper } from '../mappers/TripMapper';
+import { Trip } from '../models/TripModel';
+import { NotFoundError, InternalServerError, BadRequestError } from '../errors/AppError';
+import { TripMessages } from '../constants/messages';
 
 export class TripService implements ITripService {
   constructor(

@@ -1,9 +1,9 @@
-import { IAuthService } from '../interfaces/IAuthService.js';
-import { IUserRepository } from '../interfaces/IUserRepository.js';
-import { RegisterRequestDto, AuthResponseDto, LoginRequestDto, UserDto } from '../dtos/auth.dto.js';
-import { ConflictError, UnauthorizedError } from '../errors/AppError.js';
-import { AuthMessages } from '../constants/messages.js';
-import { UserMapper } from '../mappers/UserMapper.js';
+import { IAuthService } from '../interfaces/IAuthService';
+import { IUserRepository } from '../interfaces/IUserRepository';
+import { RegisterRequestDto, AuthResponseDto, LoginRequestDto, UserDto } from '../dtos/auth.dto';
+import { ConflictError, UnauthorizedError } from '../errors/AppError';
+import { AuthMessages } from '../constants/messages';
+import { UserMapper } from '../mappers/UserMapper';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 

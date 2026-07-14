@@ -1,4 +1,4 @@
-import { HttpStatus } from '../enums/http-status.enum.js';
+import { HttpStatus } from '../enums/http-status.enum';
 
 export abstract class AppError extends Error {
   public abstract readonly statusCode: HttpStatus;

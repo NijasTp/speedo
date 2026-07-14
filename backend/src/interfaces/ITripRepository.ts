@@ -1,4 +1,4 @@
-import { Trip } from '../models/TripModel.js';
+import { Trip } from '../models/TripModel';
 
 export interface ITripRepository {
   create(trip: Trip): Promise<Trip>;

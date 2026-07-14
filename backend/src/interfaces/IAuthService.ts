@@ -1,4 +1,4 @@
-import { RegisterRequestDto, AuthResponseDto, LoginRequestDto, UserDto } from '../dtos/auth.dto.js';
+import { RegisterRequestDto, AuthResponseDto, LoginRequestDto, UserDto } from '../dtos/auth.dto';
 
 export interface IAuthService {
   register(dto: RegisterRequestDto): Promise<AuthResponseDto>;

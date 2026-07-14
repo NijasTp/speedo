@@ -1,8 +1,7 @@
-import { Router } from 'express';
-import { TripController } from '../controllers/TripController.js';
-import { RequestHandler } from 'express';
-import { upload } from '../middlewares/uploadMiddleware.js';
-import { ApiRoutes } from '../enums/api-routes.enum.js';
+import { Router, RequestHandler } from 'express';
+import { TripController } from '../controllers/TripController';
+import { upload } from '../middlewares/uploadMiddleware';
+import { ApiRoutes } from '../enums/api-routes.enum';
 
 export function createTripRouter(tripController: TripController, authMiddleware: RequestHandler): Router {
   const router = Router();

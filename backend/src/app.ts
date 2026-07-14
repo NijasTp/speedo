@@ -3,22 +3,22 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 // Import repositories
-import { MongoUserRepository } from './repositories/MongoUserRepository.js';
-import { MongoTripRepository } from './repositories/MongoTripRepository.js';
+import { MongoUserRepository } from './repositories/MongoUserRepository';
+import { MongoTripRepository } from './repositories/MongoTripRepository';
 
 // Import services
-import { AuthService } from './services/AuthService.js';
-import { SpeedCalculationService } from './services/SpeedCalculationService.js';
-import { TripService } from './services/TripService.js';
+import { AuthService } from './services/AuthService';
+import { SpeedCalculationService } from './services/SpeedCalculationService';
+import { TripService } from './services/TripService';
 
 // Import controllers, middlewares, routes
-import { AuthController } from './controllers/AuthController.js';
-import { TripController } from './controllers/TripController.js';
-import { createAuthMiddleware } from './middlewares/authMiddleware.js';
-import { errorMiddleware } from './middlewares/errorMiddleware.js';
-import { createAuthRouter } from './routes/authRoutes.js';
-import { createTripRouter } from './routes/tripRoutes.js';
-import { ApiRoutes } from './enums/api-routes.enum.js';
+import { AuthController } from './controllers/AuthController';
+import { TripController } from './controllers/TripController';
+import { createAuthMiddleware } from './middlewares/authMiddleware';
+import { errorMiddleware } from './middlewares/errorMiddleware';
+import { createAuthRouter } from './routes/authRoutes';
+import { createTripRouter } from './routes/tripRoutes';
+import { ApiRoutes } from './enums/api-routes.enum';
 
 // Load environment variables
 dotenv.config();

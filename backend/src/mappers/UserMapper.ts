@@ -1,5 +1,5 @@
-import { User } from '../models/UserModel.js';
-import { UserDto, AuthResponseDto } from '../dtos/auth.dto.js';
+import { User } from '../models/UserModel';
+import { UserDto, AuthResponseDto } from '../dtos/auth.dto';
 
 export class UserMapper {
   public static toDto(user: User): UserDto {

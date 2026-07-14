@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { IAuthService } from '../interfaces/IAuthService.js';
-import { AuthenticatedRequest } from '../middlewares/authMiddleware.js';
-import { HttpStatus } from '../enums/http-status.enum.js';
-import { AuthMessages } from '../constants/messages.js';
-import { ValidationError, UnauthorizedError } from '../errors/AppError.js';
-import { RegisterRequestDto, LoginRequestDto } from '../dtos/auth.dto.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
+import { IAuthService } from '../interfaces/IAuthService';
+import { AuthenticatedRequest } from '../middlewares/authMiddleware';
+import { HttpStatus } from '../enums/http-status.enum';
+import { AuthMessages } from '../constants/messages';
+import { ValidationError, UnauthorizedError } from '../errors/AppError';
+import { RegisterRequestDto, LoginRequestDto } from '../dtos/auth.dto';
+import { asyncHandler } from '../utils/asyncHandler';
 
 export class AuthController {
   constructor(private readonly authService: IAuthService) {}

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { IAuthService } from '../interfaces/IAuthService.js';
-import { UnauthorizedError, InternalServerError } from '../errors/AppError.js';
-import { AuthMessages } from '../constants/messages.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { UserDto } from '../dtos/auth.dto.js';
+import { IAuthService } from '../interfaces/IAuthService';
+import { UnauthorizedError, InternalServerError } from '../errors/AppError';
+import { AuthMessages } from '../constants/messages';
+import { asyncHandler } from '../utils/asyncHandler';
+import { UserDto } from '../dtos/auth.dto';
 
 export interface AuthenticatedRequest extends Request {
   user?: UserDto;

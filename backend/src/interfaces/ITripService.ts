@@ -1,5 +1,5 @@
-import { TripResponseDto } from '../dtos/trip.dto.js';
-import { RawGPSPoint } from './ICalculationService.js';
+import { TripResponseDto } from '../dtos/trip.dto';
+import { RawGPSPoint } from './ICalculationService';
 
 export interface ITripService {
   createTrip(userId: string, name: string, rawPoints: RawGPSPoint[]): Promise<TripResponseDto>;

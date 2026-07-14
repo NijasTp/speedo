@@ -1,6 +1,6 @@
 import app from './app';
-import { connectDatabase } from './config/database.js';
-import { logger } from './logger/logger.js';
+import { connectDatabase } from './config/database';
+import { logger } from './logger/logger';
 
 const PORT = process.env.PORT || 5000;
 
