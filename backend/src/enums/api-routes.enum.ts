@@ -1,9 +1,9 @@
 export enum ApiRoutes {
-  AUTH = '/api/auth',
+  AUTH = '/auth',
   REGISTER = '/register',
   LOGIN = '/login',
   ME = '/me',
-  TRIPS = '/api/trips',
+  TRIPS = '/trips',
   TRIP_UPLOAD = '/upload',
   TRIP_ID = '/:id',
   ROOT = '/'
